@@ -2,4 +2,19 @@
     <string name="app_name">Test</string>
     <string name="title_activity_maps">Map</string>
     <string name="text">Hello</string>
+    <string name="start">START</string>
+    <string name="label_player">Player:</string>
+    <string name="label_score">Score:</string>
+    <string name="name">Guest</string>
+    <string name="score">0</string>
+    <string name="label_location">Location:</string>
+    <string name="latitude">0</string>
+    <string name="longitude">0</string>
+    <string name="button_location">Find me!</string>
+    <string name="GPSAlertDialogTitle">Title</string>
+    <string name="GPSAlertDialogMessage">Message</string>
+    <string name="action_settings">sets</string>
+    <string name="cancel">Cancel</string>
+    <string name="city">Unknown</string>
+
 </resources>

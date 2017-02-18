@@ -1,8 +1,205 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/map"
-    tools:context="com.example.freeman.test.MapsActivity"
-    android:name="com.google.android.gms.maps.SupportMapFragment"/>
+    android:layout_height="match_parent">
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/map"
+        tools:context="com.example.freeman.test.MapsActivity"
+        android:name="com.google.android.gms.maps.SupportMapFragment"/>
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/start_button_holder"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/start"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:text="@string/start"
+            android:clickable="true"
+            android:layout_margin="20dp"
+            android:layout_alignParentBottom="false"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/button_location"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:text="@string/button_location"
+            android:clickable="true"
+            android:gravity="center"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:layout_marginRight="10dp"
+            android:layout_alignTop="@+id/start"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="120dp"
+        android:layout_height="80dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="10dp"
+        android:background="@color/alpha_white"
+        android:layout_marginTop="10dp">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:showDividers="beginning|middle|end">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/label_player"
+                    android:id="@+id/label_player"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="false"
+                    android:visibility="visible"
+                    android:textStyle="bold"
+                    android:textSize="11sp"
+                    android:gravity="left"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="#000000" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Guest"
+                    android:id="@+id/name"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@+id/label_player"
+                    android:textSize="10sp"
+                    android:paddingLeft="10dp"
+                    android:textStyle="italic"
+                    android:textColor="#000000" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/label_score"
+                    android:id="@+id/label_score"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="false"
+                    android:visibility="visible"
+                    android:textStyle="bold"
+                    android:textSize="11sp"
+                    android:gravity="left"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="#000000" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/score"
+                    android:id="@+id/score"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@+id/label_score"
+                    android:textSize="10sp"
+                    android:paddingLeft="10dp"
+                    android:textStyle="italic"
+                    android:textColor="#000000" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/label_location"
+                    android:id="@+id/label_location"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="false"
+                    android:visibility="visible"
+                    android:textStyle="bold"
+                    android:textSize="11sp"
+                    android:gravity="left"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="#000000" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/city"
+                    android:id="@+id/city"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@+id/label_score"
+                    android:textSize="10sp"
+                    android:paddingLeft="10dp"
+                    android:textStyle="italic"
+                    android:textColor="#000000" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/latitude"
+                    android:id="@+id/latitude"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="false"
+                    android:visibility="visible"
+                    android:textStyle="italic"
+                    android:textSize="10sp"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="#000000"
+                    android:gravity="right" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:id="@+id/longitude"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@+id/latitude"
+                    android:textSize="10sp"
+                    android:paddingLeft="10dp"
+                    android:textStyle="italic"
+                    android:textColor="#000000"
+                    android:text="@string/longitude" />
+            </TableRow>
+
+        </TableLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>
