@@ -93,7 +93,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_toEndOf="@+id/label_player"
                     android:textSize="10sp"
-                    android:paddingLeft="10dp"
+                    android:paddingLeft="5dp"
                     android:textStyle="italic"
                     android:textColor="#000000" />
             </TableRow>
@@ -126,7 +126,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_toEndOf="@+id/label_score"
                     android:textSize="10sp"
-                    android:paddingLeft="10dp"
+                    android:paddingLeft="5dp"
                     android:textStyle="italic"
                     android:textColor="#000000" />
             </TableRow>
@@ -159,7 +159,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_toEndOf="@+id/label_score"
                     android:textSize="10sp"
-                    android:paddingLeft="10dp"
+                    android:paddingLeft="5dp"
                     android:textStyle="italic"
                     android:textColor="#000000" />
 
@@ -192,7 +192,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_toEndOf="@+id/latitude"
                     android:textSize="10sp"
-                    android:paddingLeft="10dp"
+                    android:paddingLeft="5dp"
                     android:textStyle="italic"
                     android:textColor="#000000"
                     android:text="@string/longitude" />
