@@ -10,11 +10,16 @@
     <string name="label_location">Location:</string>
     <string name="latitude">0</string>
     <string name="longitude">0</string>
-    <string name="button_location">Find me!</string>
+    <string name="button_action">Action!</string>
     <string name="GPSAlertDialogTitle">Title</string>
     <string name="GPSAlertDialogMessage">Message</string>
-    <string name="action_settings">sets</string>
     <string name="cancel">Cancel</string>
-    <string name="city">Unknown</string>
+    <string name="location">Unknown</string>
+    <string name="action_settings">Settings</string>
+    <string name="provider">None</string>
+    <string name="label_provider">Provider</string>
+    <string name="label_timestamp">Timestamp</string>
+    <string name="timestamp">None</string>
+    <string name="location_settings">Settings</string>
 
 </resources>
