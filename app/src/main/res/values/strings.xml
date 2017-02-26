@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Test</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="app_name">CityHunter</string>
+    <string name="title_activity_maps">CityHunter</string>
     <string name="text">Hello</string>
     <string name="start">START</string>
     <string name="label_player">Player:</string>
@@ -15,10 +15,9 @@
     <string name="GPSAlertDialogMessage">Message</string>
     <string name="cancel">Cancel</string>
     <string name="location">Unknown</string>
-    <string name="action_settings">Settings</string>
     <string name="provider">None</string>
-    <string name="label_provider">Provider</string>
-    <string name="label_timestamp">Timestamp</string>
+    <string name="label_provider">Provider:</string>
+    <string name="label_timestamp">Timestamp:</string>
     <string name="timestamp">None</string>
     <string name="location_settings">Settings</string>
 

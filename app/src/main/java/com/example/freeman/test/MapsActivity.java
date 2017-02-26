@@ -166,9 +166,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         longitude = location.getLongitude();
         longitudeView.setText(String.format("%.7f", longitude));
         providerView.setText(location.getProvider());
-//        locationView.setText(getLocality(Context context));
-//        timestamp = String.format("%", location.getTime());
-//        timestampView.setText(timestamp);
+        locationView.setText(getLocality(this));
+        timestamp = String.format("%s", new Date(location.getTime()));
+        timestampView.setText(timestamp);
 
         //Place current location marker
         LatLng latLng = new LatLng(latitude, longitude);

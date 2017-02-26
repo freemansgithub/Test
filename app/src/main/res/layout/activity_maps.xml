@@ -59,7 +59,7 @@
 
     <RelativeLayout
         android:layout_width="130dp"
-        android:layout_height="100dp"
+        android:layout_height="130dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="false"
         android:layout_marginRight="10dp"
@@ -259,19 +259,21 @@
                     android:layout_marginLeft="10dp"
                     android:textColor="#000000" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="null"
-                    android:id="@+id/timestamp"
-                    android:layout_alignParentTop="true"
-                    android:layout_toEndOf="@+id/label_timestamp"
-                    android:textSize="10sp"
-                    android:paddingLeft="5dp"
-                    android:textStyle="italic"
-                    android:textColor="#000000" />
             </TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="null"
+                android:id="@+id/timestamp"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@+id/label_timestamp"
+                android:textSize="10sp"
+                android:paddingLeft="5dp"
+                android:textStyle="italic"
+                android:textColor="#000000"
+                android:gravity="center_horizontal" />
 
         </TableLayout>
 
