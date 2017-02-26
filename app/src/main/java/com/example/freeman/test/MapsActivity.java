@@ -2,6 +2,7 @@ package com.example.freeman.test;
 
 import android.Manifest;
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -17,6 +18,8 @@ import android.widget.Toast;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.ToggleButton;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -24,6 +27,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -49,60 +54,55 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
-    Marker mCurrLocationMarker;
+//    Marker mCurrLocationMarker;
     LocationRequest mLocationRequest;
-    // How many Geocoder should return our GPSTracker
     int geocoderMaxResults = 1;
-
     private float zoom;
     LatLng latlng;
     Double latitude;
     Double longitude;
-    String timestamp;
+    Float radius;
+    String timestamp, timestampOld;
     String location;
     String countryName;
+    String player;
     TextView latitudeView;
     TextView longitudeView;
     TextView timestampView;
     TextView locationView;
     TextView providerView;
-
-    private LocationManager locationManager;
-    private Marker mMarker;
-
-    StringBuilder sbGPS = new StringBuilder();
-    StringBuilder sbNet = new StringBuilder();
-
+    TextView zoomView;
+    TextView playerView;
+    private Marker playerMarker;
+    private Circle playerCircle;
+    int playerColor = Color.BLUE;
     // The minimum time between updates in milliseconds
     private static final long MIN_TIME_BW_UPDATES = 1000; // 1 second
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-
-//    public MapsActivity(Context context) {
-//        this.mContext = context;
-//        onResume();
-//    }
+    ToggleButton btnStart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
-
         latitudeView = (TextView) findViewById(R.id.latitude);
         longitudeView = (TextView) findViewById(R.id.longitude);
         timestampView = (TextView) findViewById(R.id.timestamp);
         locationView = (TextView) findViewById(R.id.location);
         providerView = (TextView) findViewById(R.id.provider);
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        zoomView = (TextView) findViewById(R.id.zoom);
+        playerView = (TextView) findViewById(R.id.player);
+        btnStart = (ToggleButton) findViewById(R.id.start);
         zoom = 16;
+        radius = 50.0f;
+        player = "Guest";
+        playerColor = Color.GREEN;
+        timestampOld = null;
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-//        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -157,42 +157,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
+//        if (R.id.start == true){
+//
+//        }
         mLastLocation = location;
-        if (mCurrLocationMarker != null) {
-            mCurrLocationMarker.remove();
+        if (playerMarker != null) {
+            playerMarker.remove();
+            playerCircle.remove();
         }
-        latitude = location.getLatitude();
-        latitudeView.setText(String.format("%.7f", latitude));
-        longitude = location.getLongitude();
-        longitudeView.setText(String.format("%.7f", longitude));
-        providerView.setText(location.getProvider());
-        locationView.setText(getLocality(this));
         timestamp = String.format("%s", new Date(location.getTime()));
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+        String info = String.format("%s Lat:%.8f Long:%.8f", timestamp, latitude, longitude);
+        latitudeView.setText(String.format("%.8f", latitude));
+        longitudeView.setText(String.format("%.8f", longitude));
+        providerView.setText(location.getProvider());
+        this.location = String.format("%s/%s", getCountryName(this), getLocality(this));
+        locationView.setText(this.location);
         timestampView.setText(timestamp);
+        Toast.makeText(this, info, Toast.LENGTH_SHORT).show();
+        zoomView.setText(String.format("%.1f", zoom));
 
         //Place current location marker
         LatLng latLng = new LatLng(latitude, longitude);
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        mCurrLocationMarker = mMap.addMarker(markerOptions);
+        MarkerOptions playserMarkerOptions = new MarkerOptions();
+        playserMarkerOptions.position(latLng);
+        playserMarkerOptions.title("Current Position");
+        playserMarkerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        playerMarker = mMap.addMarker(playserMarkerOptions);
 
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom));
-
-        //stop location updates
-        if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
+        playerCircle = mMap.addCircle(new CircleOptions()
+                .center(latLng)
+                .radius(radius)
+                .strokeColor(playerColor)
+                .strokeWidth(8)
+                .fillColor(playerColor));
 
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        latitude = 53.911954;
-        longitude = 27.593078;
+        latitude = 53.912954266;
+        longitude = 27.59307880;
 
     }
 
@@ -237,9 +246,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             == PackageManager.PERMISSION_GRANTED) {
 
                         if (mGoogleApiClient == null) {
-                            buildGoogleApiClient();
+//                            buildGoogleApiClient();
                         }
-                        mMap.setMyLocationEnabled(true);
+//                        mMap.setMyLocationEnabled(true);
                     }
                 } else {
                     // Permission denied, Disable the functionality that depends on this permission.
@@ -256,29 +265,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onPause() {
         super.onPause();
+        //TODO: Do not stop getting of gps info onPause
         //stop location updates when Activity is no longer active
-        if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
+//        if (mGoogleApiClient != null) {
+//            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+//        }
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        mMap.setIndoorEnabled(true);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setCompassEnabled(true);
 
         //Initialize Google Play Services
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
-                buildGoogleApiClient();
-                mMap.setMyLocationEnabled(true);
+//                buildGoogleApiClient();
+//                mMap.setMyLocationEnabled(true);
             }
         }
         else {
-            buildGoogleApiClient();
-            mMap.setMyLocationEnabled(true);
+//            buildGoogleApiClient();
+//            mMap.setMyLocationEnabled(true);
         }
     }
 
@@ -310,5 +323,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void onClickLocationSettings(View view) {
         startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+    }
+
+    public void onClickStart(View view) {
+        if (btnStart.getText().equals(btnStart.getTextOff())){
+            if (mGoogleApiClient != null) {
+                LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            }
+        }else {
+            if (mGoogleApiClient == null){
+                buildGoogleApiClient();
+            }
+        }
     }
 }

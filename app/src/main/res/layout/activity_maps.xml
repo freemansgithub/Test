@@ -19,7 +19,7 @@
         android:id="@+id/start_button_holder"
         android:layout_alignParentBottom="true">
 
-        <Button
+        <ToggleButton
             android:id="@+id/start"
             android:layout_width="150dp"
             android:layout_height="50dp"
@@ -31,7 +31,8 @@
             android:layout_centerHorizontal="true"
             android:gravity="center"
             android:textSize="13sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:onClick="onClickStart" />
 
         <Button
             android:id="@+id/button_action"
@@ -58,8 +59,8 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:layout_width="130dp"
-        android:layout_height="130dp"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="false"
         android:layout_marginRight="10dp"
@@ -88,21 +89,21 @@
                     android:layout_alignParentEnd="false"
                     android:visibility="visible"
                     android:textStyle="bold"
-                    android:textSize="11sp"
-                    android:gravity="left"
-                    android:layout_marginLeft="10dp"
+                    android:textSize="12sp"
+                    android:gravity="start"
+                    android:layout_marginStart="5dp"
                     android:textColor="#000000" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="Guest"
-                    android:id="@+id/name"
+                    android:text="@+id/player"
+                    android:id="@+id/player"
                     android:layout_alignParentTop="true"
                     android:layout_toEndOf="@+id/label_player"
-                    android:textSize="10sp"
-                    android:paddingLeft="5dp"
+                    android:textSize="12sp"
+                    android:paddingStart="5dp"
                     android:textStyle="italic"
                     android:textColor="#000000" />
             </TableRow>
@@ -121,9 +122,9 @@
                     android:layout_alignParentEnd="false"
                     android:visibility="visible"
                     android:textStyle="bold"
-                    android:textSize="11sp"
-                    android:gravity="left"
-                    android:layout_marginLeft="10dp"
+                    android:textSize="12sp"
+                    android:gravity="start"
+                    android:layout_marginStart="5dp"
                     android:textColor="#000000" />
 
                 <TextView
@@ -134,8 +135,8 @@
                     android:id="@+id/score"
                     android:layout_alignParentTop="true"
                     android:layout_toEndOf="@+id/label_score"
-                    android:textSize="10sp"
-                    android:paddingLeft="5dp"
+                    android:textSize="12sp"
+                    android:paddingStart="5dp"
                     android:textStyle="italic"
                     android:textColor="#000000" />
             </TableRow>
@@ -154,9 +155,9 @@
                     android:layout_alignParentEnd="false"
                     android:visibility="visible"
                     android:textStyle="bold"
-                    android:textSize="11sp"
-                    android:gravity="left"
-                    android:layout_marginLeft="10dp"
+                    android:textSize="12sp"
+                    android:gravity="start"
+                    android:layout_marginStart="5dp"
                     android:textColor="#000000" />
 
                 <TextView
@@ -189,7 +190,7 @@
                     android:visibility="visible"
                     android:textStyle="italic"
                     android:textSize="10sp"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="5dp"
                     android:textColor="#000000"
                     android:gravity="right" />
 
@@ -223,7 +224,7 @@
                     android:textStyle="bold"
                     android:textSize="11sp"
                     android:gravity="left"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="5dp"
                     android:textColor="#000000" />
 
                 <TextView
@@ -256,7 +257,7 @@
                     android:textStyle="bold"
                     android:textSize="11sp"
                     android:gravity="left"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="5dp"
                     android:textColor="#000000" />
 
             </TableRow>
@@ -274,6 +275,39 @@
                 android:textStyle="italic"
                 android:textColor="#000000"
                 android:gravity="center_horizontal" />
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/label_zoom"
+                    android:id="@+id/label_zoom"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="false"
+                    android:visibility="visible"
+                    android:textStyle="bold"
+                    android:textSize="11sp"
+                    android:gravity="left"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="#000000" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/zoom"
+                    android:id="@+id/zoom"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@+id/label_zoom"
+                    android:textSize="10sp"
+                    android:paddingLeft="5dp"
+                    android:textStyle="italic"
+                    android:textColor="#000000" />
+            </TableRow>
 
         </TableLayout>
 
