@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Build;
@@ -14,6 +13,8 @@ import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.ColorUtils;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +23,8 @@ import android.widget.ToggleButton;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -65,7 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String timestamp, timestampOld;
     String location;
     String countryName;
-    String player;
+    String playerName;
     TextView latitudeView;
     TextView longitudeView;
     TextView timestampView;
@@ -75,7 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     TextView playerView;
     private Marker playerMarker;
     private Circle playerCircle;
-    int playerColor = Color.BLUE;
+    int playerColor;
     // The minimum time between updates in milliseconds
     private static final long MIN_TIME_BW_UPDATES = 1000; // 1 second
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -98,9 +101,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btnStart = (ToggleButton) findViewById(R.id.start);
         zoom = 16;
         radius = 50.0f;
-        player = "Guest";
-        playerColor = Color.GREEN;
-        timestampOld = null;
+        playerColor = Color.BLUE;
+        playerName = "Guest";
+//        timestampOld = null;
+        playerView.setText(playerName);
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
@@ -157,9 +161,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
-//        if (R.id.start == true){
-//
-//        }
         mLastLocation = location;
         if (playerMarker != null) {
             playerMarker.remove();
@@ -177,37 +178,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         timestampView.setText(timestamp);
         Toast.makeText(this, info, Toast.LENGTH_SHORT).show();
         zoomView.setText(String.format("%.1f", zoom));
-
         //Place current location marker
         LatLng latLng = new LatLng(latitude, longitude);
         MarkerOptions playserMarkerOptions = new MarkerOptions();
         playserMarkerOptions.position(latLng);
-        playserMarkerOptions.title("Current Position");
+        playserMarkerOptions.title(playerName);
         playserMarkerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         playerMarker = mMap.addMarker(playserMarkerOptions);
 
-        //move map camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom));
+        int playerColor50percent = ColorUtils.setAlphaComponent(playerColor, 80);
         playerCircle = mMap.addCircle(new CircleOptions()
                 .center(latLng)
                 .radius(radius)
                 .strokeColor(playerColor)
-                .strokeWidth(8)
-                .fillColor(playerColor));
+                .strokeWidth(2)
+                .fillColor(playerColor50percent));
 
+        //move map camera
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom));
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         latitude = 53.912954266;
-        longitude = 27.59307880;
-
+        longitude = 27.593078800;
     }
 
     public boolean checkLocationPermission(){
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             // Asking user if explanation is needed
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
@@ -248,7 +247,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if (mGoogleApiClient == null) {
 //                            buildGoogleApiClient();
                         }
-//                        mMap.setMyLocationEnabled(true);
+                        mMap.setMyLocationEnabled(true);
                     }
                 } else {
                     // Permission denied, Disable the functionality that depends on this permission.
@@ -276,22 +275,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        mMap.setIndoorEnabled(true);
-        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
+//        mMap.getUiSettings().setZoomControlsEnabled(true);
+
+        View mapView = findViewById(R.id.map);
+        View locationButton = mapView.findViewWithTag("GoogleMapMyLocationButton");
+        // and next place it, for exemple, on bottom right (as Google Maps app)
+        RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
+        // position on right bottom
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        rlp.setMargins(0, 0, 30, 30);
 
         //Initialize Google Play Services
+        int b = Build.VERSION.SDK_INT;
+        int b2 = Build.VERSION_CODES.M;
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
 //                buildGoogleApiClient();
-//                mMap.setMyLocationEnabled(true);
+                  mMap.setMyLocationEnabled(true);
             }
         }
         else {
 //            buildGoogleApiClient();
-//            mMap.setMyLocationEnabled(true);
+            mMap.setMyLocationEnabled(true);
         }
     }
 
@@ -300,7 +310,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (addresses != null && addresses.size() > 0) {
             Address address = addresses.get(0);
             String countryName = address.getCountryName();
-
             return countryName;
         } else {
             return null;
@@ -309,11 +318,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public String getLocality(Context context) {
         List<Address> addresses = getGeocoderAddress(context);
-
         if (addresses != null && addresses.size() > 0) {
             Address address = addresses.get(0);
             String locality = address.getLocality();
-
             return locality;
         }
         else {
