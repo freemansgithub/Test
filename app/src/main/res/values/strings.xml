@@ -22,5 +22,6 @@
     <string name="location_settings">Settings</string>
     <string name="label_zoom">Zoom:</string>
     <string name="zoom">null</string>
+    <string name="button_push">Push</string>
 
 </resources>

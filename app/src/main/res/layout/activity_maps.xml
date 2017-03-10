@@ -34,6 +34,18 @@
             android:textStyle="bold"
             android:onClick="onClickStart" />
 
+        <Button
+            android:layout_height="50dp"
+            android:layout_width="70dp"
+            android:text="@string/button_push"
+            android:id="@+id/push"
+            android:onClick="onClickPush"
+            android:textStyle="bold"
+            android:textSize="13sp"
+            android:layout_alignParentStart="true"
+            android:layout_margin="20dp"
+            android:layout_alignParentEnd="false" />
+
         <!--<Button-->
             <!--android:id="@+id/button_action"-->
             <!--android:layout_width="100dp"-->
@@ -49,13 +61,6 @@
             <!--android:layout_alignParentEnd="true"-->
             <!--android:layout_alignParentRight="true" />-->
 
-        <Button android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="@string/location_settings" android:id="@+id/btnLocationSettings"
-            android:onClick="onClickLocationSettings"
-            android:layout_alignTop="@+id/start"
-            android:layout_alignParentStart="true"
-            android:layout_toStartOf="@+id/start"
-            android:textStyle="bold"
-            android:textSize="13sp"> </Button>
     </RelativeLayout>
 
     <RelativeLayout
@@ -312,5 +317,13 @@
         </TableLayout>
 
     </RelativeLayout>
+
+    <Button android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="@string/location_settings" android:id="@+id/btnLocationSettings"
+        android:onClick="onClickLocationSettings"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        android:layout_alignTop="@+id/relativeLayout"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="5dp"> </Button>
 
 </RelativeLayout>

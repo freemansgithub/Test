@@ -23,8 +23,6 @@ import android.widget.ToggleButton;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -39,10 +37,18 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -57,8 +63,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
-//    Marker mCurrLocationMarker;
     LocationRequest mLocationRequest;
+
+    MqttAndroidClient client;
+    String mqttHost;
+    String topic = "test/topic";
+    IMqttToken token;
+
     int geocoderMaxResults = 1;
     private float zoom;
     LatLng latlng;
@@ -103,10 +114,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         radius = 50.0f;
         playerColor = Color.BLUE;
         playerName = "Guest";
-//        timestampOld = null;
+
+        mqttHost = "tcp://79.98.31.32:1883";
+//        String clientId = MqttClient.generateClientId();
+        client = new MqttAndroidClient(this.getApplicationContext(), mqttHost, "freeman");
+        MqttConnectOptions options = new MqttConnectOptions();
+
         playerView.setText(playerName);
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        try {
+            token = client.connect();
+            token.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    // We are connected
+                    Log.d(TAG, "onSuccess");
+                    Toast.makeText(MapsActivity.this, "Connected", Toast.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    // Something went wrong e.g. connection timeout or firewall problems
+                    Log.d(TAG, "onFailure");
+                    Toast.makeText(MapsActivity.this, "Connection failed", Toast.LENGTH_LONG).show();
+                }
+            });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -290,8 +326,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         rlp.setMargins(0, 0, 30, 30);
 
         //Initialize Google Play Services
-        int b = Build.VERSION.SDK_INT;
-        int b2 = Build.VERSION_CODES.M;
+//        int b = Build.VERSION.SDK_INT;
+//        int b2 = Build.VERSION_CODES.M;
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
@@ -330,6 +366,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void onClickLocationSettings(View view) {
         startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+    }
+
+    public void onClickPush(View view){
+        String message = "Fuck Year!";
+//        byte[] encodedMessage = new byte[0];
+        try {
+//            encodedMessage = message.getBytes("UTF-8");
+//            MqttMessage mqttMessage = new MqttMessage(encodedMessage);
+//            mqttMessage.setRetained(true);
+            client.publish(topic, message.getBytes(), 0, false);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
     }
 
     public void onClickStart(View view) {
