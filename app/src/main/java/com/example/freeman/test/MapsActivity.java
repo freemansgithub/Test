@@ -49,6 +49,8 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -76,7 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Double latitude;
     Double longitude;
     Float radius;
-    String timestamp, timestampOld;
+    String timestamp = null;
     String location;
     String countryName;
     String playerName;
@@ -94,6 +96,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final long MIN_TIME_BW_UPDATES = 1000; // 1 second
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     ToggleButton btnStart;
+    private TimerService timer = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,9 +118,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         playerColor = Color.BLUE;
         playerName = "Guest";
 
-        mqttHost = "tcp://79.98.31.32:1883";
-//        String clientId = MqttClient.generateClientId();
-        client = new MqttAndroidClient(this.getApplicationContext(), mqttHost, "freeman");
+//        mqttHost = "tcp://79.98.31.32:1883";
+        mqttHost = "tcp://192.168.1.6:1883";
+
+        String clientId = MqttClient.generateClientId();
+        client = new MqttAndroidClient(this.getApplicationContext(), mqttHost, clientId);
         MqttConnectOptions options = new MqttConnectOptions();
 
         playerView.setText(playerName);
@@ -229,6 +234,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .strokeColor(playerColor)
                 .strokeWidth(2)
                 .fillColor(playerColor50percent));
+
+        // push updated date to server
+        pushToServer();
 
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -368,14 +376,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
     }
 
-    public void onClickPush(View view){
-        String message = "Fuck Year!";
-//        byte[] encodedMessage = new byte[0];
+    public void pushToServer(){
+        JSONObject jsonObj = new JSONObject();
+        if (timestamp == null) {
+            timestamp = "null";
+        }
         try {
-//            encodedMessage = message.getBytes("UTF-8");
-//            MqttMessage mqttMessage = new MqttMessage(encodedMessage);
-//            mqttMessage.setRetained(true);
-            client.publish(topic, message.getBytes(), 0, false);
+            jsonObj.put("name", playerName);
+            jsonObj.put("timestamp", timestamp);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String message = jsonObj.toString();
+
+
+        try {
+            MqttMessage mqttMessage = new MqttMessage(message.getBytes());
+            client.publish(topic, mqttMessage.getPayload(), 0, false);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onClickPush(View view){
+
+        JSONObject jsonObj = new JSONObject();
+        if (timestamp == null) {
+            timestamp = "null";
+        }
+        try {
+            jsonObj.put("name", playerName);
+            jsonObj.put("timestamp", timestamp);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String message = jsonObj.toString();
+
+
+        try {
+            MqttMessage mqttMessage = new MqttMessage(message.getBytes());
+            client.publish(topic, mqttMessage.getPayload(), 0, false);
         } catch (MqttException e) {
             e.printStackTrace();
         }
@@ -386,10 +428,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (mGoogleApiClient != null) {
                 LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             }
+            // Stop the service
+            stopService(new Intent(getBaseContext(), TimerService.class));
         }else {
             if (mGoogleApiClient == null){
                 buildGoogleApiClient();
             }
+            // Start the service
+            startService(new Intent(getBaseContext(), TimerService.class));
         }
     }
 }
