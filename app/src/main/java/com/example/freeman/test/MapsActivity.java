@@ -384,13 +384,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         try {
             jsonObj.put("name", playerName);
             jsonObj.put("timestamp", timestamp);
-
+            jsonObj.put("lat", latitude);
+            jsonObj.put("lng", longitude);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         String message = jsonObj.toString();
-
-
         try {
             MqttMessage mqttMessage = new MqttMessage(message.getBytes());
             client.publish(topic, mqttMessage.getPayload(), 0, false);
@@ -408,13 +407,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         try {
             jsonObj.put("name", playerName);
             jsonObj.put("timestamp", timestamp);
+            jsonObj.put("lat", latitude);
+            jsonObj.put("lng", longitude);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
         String message = jsonObj.toString();
-
-
         try {
             MqttMessage mqttMessage = new MqttMessage(message.getBytes());
             client.publish(topic, mqttMessage.getPayload(), 0, false);
