@@ -75,8 +75,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     int geocoderMaxResults = 1;
     private float zoom;
     LatLng latlng;
-    Double latitude;
-    Double longitude;
+    Double latitude = 53.912954266;
+    Double longitude = 27.593078800;
     Float radius;
     String timestamp = null;
     String location;
@@ -92,6 +92,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker playerMarker;
     private Circle playerCircle;
     int playerColor;
+    int playerId = 0;
     // The minimum time between updates in milliseconds
     private static final long MIN_TIME_BW_UPDATES = 1000; // 1 second
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -382,6 +383,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             timestamp = "null";
         }
         try {
+            jsonObj.put("id", playerId);
             jsonObj.put("name", playerName);
             jsonObj.put("timestamp", timestamp);
             jsonObj.put("lat", latitude);
@@ -405,6 +407,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             timestamp = "null";
         }
         try {
+            jsonObj.put("id", playerId);
             jsonObj.put("name", playerName);
             jsonObj.put("timestamp", timestamp);
             jsonObj.put("lat", latitude);
