@@ -45,6 +45,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -73,7 +74,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     MqttAndroidClient client;
     String mqttHost;
-    String topic = "client";
+    String clientTopic = "client";
+    String serverTopic = "server";
     IMqttToken token;
 
     int geocoderMaxResults = 1;
@@ -87,6 +89,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Boolean online = false;
     String location;
     String countryName;
+    String lastMessage;
     String playerName;
     TextView latitudeView;
     TextView longitudeView;
@@ -129,36 +132,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mqttHost = "tcp://192.168.1.6:1883";
 
         String clientId = MqttClient.generateClientId();
-
         client = new MqttAndroidClient(this.getApplicationContext(), mqttHost, clientId);
-//        client.setCallback(new MqttCallback() {
-//            @Override
-//            public void connectComplete(boolean reconnect, String serverURI) {
-//
-//                if (reconnect) {
-//                    addToHistory("Reconnected to : " + serverURI);
-//                    // Because Clean Session is true, we need to re-subscribe
-//                    subscribeToTopic();
-//                } else {
-//                    addToHistory("Connected to: " + serverURI);
-//                }
-//            }
-//
-//            @Override
-//            public void connectionLost(Throwable cause) {
-//                addToHistory("The Connection was lost.");
-//            }
-//
-//            @Override
-//            public void messageArrived(String topic, MqttMessage message) throws Exception {
-//                addToHistory("Incoming message: " + new String(message.getPayload()));
-//            }
-//
-//            @Override
-//            public void deliveryComplete(IMqttDeliveryToken token) {
-//
-//            }
-//        });
+        client.setCallback(new MqttCallback() {
+            @Override
+            public void connectionLost(Throwable cause) {
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken token) {
+
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage message) throws Exception {
+                client.subscribe(serverTopic, 0);
+                lastMessage = new String(message.getPayload());
+            }
+
+        });
         MqttConnectOptions options = new MqttConnectOptions();
 
         playerView.setText(playerName);
@@ -170,6 +161,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     // We are connected
+                    try {
+                        client.subscribe(serverTopic, 0);
+                    }catch (MqttException e){
+                        e.printStackTrace();
+                    }
+
                     Log.d(TAG, "onSuccess");
                     Toast.makeText(MapsActivity.this, "Connected", Toast.LENGTH_LONG).show();
                 }
@@ -430,7 +427,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String message = jsonObj.toString();
         try {
             MqttMessage mqttMessage = new MqttMessage(message.getBytes());
-            client.publish(topic, mqttMessage.getPayload(), 0, false);
+            client.publish(clientTopic, mqttMessage.getPayload(), 0, false);
         } catch (MqttException e) {
             e.printStackTrace();
         }
@@ -457,7 +454,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String message = jsonObj.toString();
         try {
             MqttMessage mqttMessage = new MqttMessage(message.getBytes());
-            client.publish(topic, mqttMessage.getPayload(), 0, false);
+            client.publish(clientTopic, mqttMessage.getPayload(), 0, false);
         } catch (MqttException e) {
             e.printStackTrace();
         }
