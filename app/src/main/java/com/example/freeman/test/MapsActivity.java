@@ -38,6 +38,9 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -47,6 +50,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
@@ -69,7 +73,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     MqttAndroidClient client;
     String mqttHost;
-    String topic = "test/topic";
+    String topic = "client";
     IMqttToken token;
 
     int geocoderMaxResults = 1;
@@ -79,6 +83,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Double longitude = 27.593078800;
     Float radius;
     String timestamp = null;
+    Boolean alive = false;
+    Boolean online = false;
     String location;
     String countryName;
     String playerName;
@@ -92,7 +98,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker playerMarker;
     private Circle playerCircle;
     int playerColor;
-    int playerId = 0;
+    int playerId = 48;
     // The minimum time between updates in milliseconds
     private static final long MIN_TIME_BW_UPDATES = 1000; // 1 second
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -123,7 +129,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mqttHost = "tcp://192.168.1.6:1883";
 
         String clientId = MqttClient.generateClientId();
+
         client = new MqttAndroidClient(this.getApplicationContext(), mqttHost, clientId);
+//        client.setCallback(new MqttCallback() {
+//            @Override
+//            public void connectComplete(boolean reconnect, String serverURI) {
+//
+//                if (reconnect) {
+//                    addToHistory("Reconnected to : " + serverURI);
+//                    // Because Clean Session is true, we need to re-subscribe
+//                    subscribeToTopic();
+//                } else {
+//                    addToHistory("Connected to: " + serverURI);
+//                }
+//            }
+//
+//            @Override
+//            public void connectionLost(Throwable cause) {
+//                addToHistory("The Connection was lost.");
+//            }
+//
+//            @Override
+//            public void messageArrived(String topic, MqttMessage message) throws Exception {
+//                addToHistory("Incoming message: " + new String(message.getPayload()));
+//            }
+//
+//            @Override
+//            public void deliveryComplete(IMqttDeliveryToken token) {
+//
+//            }
+//        });
         MqttConnectOptions options = new MqttConnectOptions();
 
         playerView.setText(playerName);
@@ -138,7 +173,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.d(TAG, "onSuccess");
                     Toast.makeText(MapsActivity.this, "Connected", Toast.LENGTH_LONG).show();
                 }
-
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     // Something went wrong e.g. connection timeout or firewall problems
@@ -379,6 +413,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void pushToServer(){
         JSONObject jsonObj = new JSONObject();
+        DateFormat df = new SimpleDateFormat("dd MM yyyy, HH:mm");
+        timestamp = df.format(Calendar.getInstance().getTime());
         if (timestamp == null) {
             timestamp = "null";
         }
@@ -401,8 +437,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void onClickPush(View view){
-
         JSONObject jsonObj = new JSONObject();
+        DateFormat df = new SimpleDateFormat("dd MM yyyy, HH:mm");
+        timestamp = df.format(Calendar.getInstance().getTime());
         if (timestamp == null) {
             timestamp = "null";
         }
@@ -412,7 +449,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             jsonObj.put("timestamp", timestamp);
             jsonObj.put("lat", latitude);
             jsonObj.put("lng", longitude);
-
+            jsonObj.put("alive", alive);
+            jsonObj.put("online", online);
         } catch (JSONException e) {
             e.printStackTrace();
         }
