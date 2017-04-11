@@ -129,7 +129,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         playerName = "Guest";
 
 //        mqttHost = "tcp://79.98.31.32:1883";
-        mqttHost = "tcp://192.168.1.6:1883";
+//        mqttHost = "tcp://192.168.1.6:1883";
+        mqttHost = "tcp://10.10.9.186:1883";
+
 
         String clientId = MqttClient.generateClientId();
         client = new MqttAndroidClient(this.getApplicationContext(), mqttHost, clientId);
